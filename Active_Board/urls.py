@@ -18,9 +18,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from users.views import home
+from users.views import add_user, delete_user, home
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("home/", home)
+    path("", home,name="home"),
+    path('add_user/',add_user,name="add_user"),
+    path('delete_user/<int:id>/',delete_user,name="delete_user")
 ]

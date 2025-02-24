@@ -1,64 +1,62 @@
-{% extends 'base.html' %}
+<!-- @format -->
 
-{% load static %}
+{% extends 'base.html' %} {% load static %} {% block content %}
 
-{% block content %}
-
-  <header class='mt-3'>
-    <h2>Active Board</h2>
-  </header>
-
-  <div class="container">
+<div class="container">
+  <div class="navbar">
     <h1>Users and Score</h1>
-    <div class="size-24 rounded-full bg-radial-[at_25%_25%] from-white to-zinc-900 to-75%"></div>
-    <p>Bu yerda foydalanuvchilar ro'yxati va ularning ballari ko'rsatiladi.</p>
-    <table class="table">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">First name</th>
-      <th scope="col">Last name</th>
-      <th scope="col">Score</th>
-      <th scope="col">Position</th>
-      <th scope="col">Status</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th scope="row">1</th>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>30</td>
-      <td>Back end</td>
-      <td>
-        <a type="button" hreh="/tasks.html" class="btn btn-primary">view</a>
-      </td>
-    </tr>
-    <tr>
-      <th scope="row">2</th>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>50</td>
-      <td>Back end</td>
-      <td>
-        <a type="button" hreh="/tasks.html" class="btn btn-primary">view</a>
-      </td>    
-    </tr>
-    <tr>
-      <th scope="row">3</th>
-      <td>William</td>
-      <td>Smith</td>
-      <td>80</td>
-      <td>Front end</td>
-      <td>
-        <a type="button" hreh="/tasks.html" class="btn btn-primary">view</a>
-      </td>
-    </tr>
-  </tbody>
-</table>
-    
-    
-  </div>
+    <div
+      class="size-24 rounded-full bg-radial-[at_25%_25%] from-white to-zinc-900 to-75%"
+    ></div>
 
- 
+    <a
+      href="{% url 'add_user' %}"
+      class="btn btn-success"
+      ><i class="fa-solid fa-user-plus"></i> Add User
+    </a>
+  </div>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">First name</th>
+        <th scope="col">Last name</th>
+        <th scope="col">Score</th>
+        <th scope="col">Position</th>
+        <th scope="col">Status</th>
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr>
+        <th scope="row">{{forloop.counter}}</th>
+        <td>{{user.first_name}}</td>
+        <td>{{user.last_name}}</td>
+        <td>{{user.score}}</td>
+        <td>{{user.position}}</td>
+        <td class="text-center">
+          <a
+            type="button"
+            hreh="/tasks.html"
+            class="btn btn-primary"
+          >
+            view</a
+          >
+        </td> 
+        <td  class="text-center">
+            <a href="#">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </a>
+            &nbsp;
+            <a href="#">
+              <i class="fas fa-trash-alt text-danger"></i>
+            </a>
+          </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
 {% endblock %}
