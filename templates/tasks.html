@@ -1,15 +1,14 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
-  <header>
-    <p class="fs-4">Active Board</p>
-  </header>
+
 
   <div class="container">
     <!-- Masalan, user_id=2 bo'lgan foydalanuvchi -->
     <h1>Foydalanuvchi: Bek Soliyev</h1>
     <p>Bu sahifada <strong>Bek Soliyev</strong> tomonidan berilgan vazifalar ro'yxati va ularning statusi ko'rsatiladi.</p>
     
-    <table>
+    <table class='table'>
       <thead>
         <tr>
           <th>ID</th>
@@ -21,47 +20,28 @@
       </thead>
       <tbody>
         <!-- Namuna ma'lumotlar -->
+         {% for task in tasks %}
         <tr>
-          <td>1</td>
-          <td>Task B</td>
-          <!-- Example split danger button -->
-           <!-- Example single danger button -->
-            <td>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                        Action
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item status-pending" href="#">Jarayonda</a></li>
-                        <li><a class="dropdown-item status-completed" href="#">Bajarildi</a></li>
-                        <li><a class="dropdown-item status-failed " href="#">Bajarilmadi</a></li>
-                        
-                    </ul>
-                </div>
-            </td>
+          <td>{{forloop.counter}}</td>
+          <td>{{task.name}}</td>
+          <td>
+              <div class="btn-group">
+                  <form method="POST" action="{% url 'update_status' task.id %}">
+                      {% csrf_token %}
+                      <select name="status" onchange="this.form.submit()">
+                          <option value="Jarayonda" {% if task.status.name == "Jarayonda" %}selected{% endif %}>Jarayonda</option>
+                          <option value="Bajarildi" {% if task.status.name == "Bajarildi" %}selected{% endif %}>Bajarildi</option>
+                          <option value="Bajarilmadi" {% if task.status.name == "Bajarilmadi" %}selected{% endif %}>Bajarilmadi</option>
+                          <option value="Bekor qilindi" {% if task.status.name == "Bekor qilindi" %}selected{% endif %}>Bekor qilindi</option>
+                      </select>
+                  </form>
 
-          <td class="status">01.02.2024</td>
-          <td class="status">02.02.2024</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>Task C</td>
-          <td class="status-completed">
-            <div class="btn-group">
-                    <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                        Action
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item status-pending" href="#">Jarayonda</a></li>
-                        <li><a class="dropdown-item status-completed" href="#">Bajarildi</a></li>
-                        <li><a class="dropdown-item status-failed " href="#">Bajarilmadi</a></li>
-                        
-                    </ul>
-            </div>
+              </div>
           </td>
-          <td class="status">02.02.2024</td>
-          <td class="status">04.02.2024</td>
+          <td class="status">{{task.start_time}}</td>
+          <td class="status">{{task.end_time}}</td>
         </tr>
+        {% endfor %}
         <!-- Bazadagi user_id=2 bo'lgan vazifalarni dinamik kiritish mumkin -->
       </tbody>
     </table>
@@ -71,4 +51,4 @@
         <a class="btn btn-primary" type="button">+ add task</a>
     </div>
   </div>
-  {% endblock %}
+{% endblock %}

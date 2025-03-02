@@ -33,12 +33,12 @@
         <th scope="row">{{forloop.counter}}</th>
         <td>{{user.first_name}}</td>
         <td>{{user.last_name}}</td>
-        <td>{{user.score}}</td>
+        <td class="text-center">{{user.score}}<i class="fa-solid fa-star " style="color: #fff700;"></i></td>
         <td>{{user.position}}</td>
         <td class="text-center">
           <a
             type="button"
-            hreh="/tasks.html"
+            href="{% url "user_status" user.id %}"
             class="btn btn-primary"
           >
             view</a
@@ -49,7 +49,7 @@
               <i class="fa-solid fa-pen-to-square"></i>
             </a>
             &nbsp;
-            <a href="#">
+            <a href="{% url "delete_user" user.id %}">
               <i class="fas fa-trash-alt text-danger"></i>
             </a>
           </td>

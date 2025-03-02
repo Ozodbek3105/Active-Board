@@ -33,6 +33,8 @@ class Teg(models.Model):
 
     def __str__(self):
         return f"{self.name}"
+def get_default_status():
+    return UserStatus.objects.get_or_create(name="Jarayonda")[0].id
 
 class Tasks(models.Model):
     # Tasks modeli harbir userlar uchun vazifalar beriladi
@@ -42,7 +44,7 @@ class Tasks(models.Model):
     start_time = models.DateTimeField(default=now, blank=True)
     end_time = models.DateTimeField(blank=True, null=True)
     # updated_at = models.DateTimeField(auto_now=True)  # Oxirgi yangilanish vaqti
-    status = models.ForeignKey(UserStatus,on_delete=models.CASCADE)
+    status = models.ForeignKey(UserStatus,on_delete=models.CASCADE,default=get_default_status)
     teg = models.ForeignKey(Teg,on_delete=models.CASCADE)
 
     
