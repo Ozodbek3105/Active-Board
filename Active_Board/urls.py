@@ -18,13 +18,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from users.views import add_user, delete_user, home, update_task_status, user_status
+from users.views import add_task_for_user, add_user, delete_user, edit_user, home, update_task_status, user_status
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", home,name="home"),
     path('add_user/',add_user,name="add_user"),
     path('delete_user/<int:id>/',delete_user,name="delete_user"),
+    path('edit_user/<int:id>/',edit_user,name="edit_user"),
     path('user/user_status/<int:id>/',user_status,name="user_status"),
     path('user/update_status/<int:task_id>/',update_task_status,name="update_status"),
+    path("user/add_task/",add_task_for_user,name="add_task")
 ]

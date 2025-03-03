@@ -1,7 +1,7 @@
 from django.utils.timezone import now
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponse
-from users.forms import AddUserForm
+from users.forms import AddTaskforUser, AddUserForm, EditUserForm
 from users.models import Tasks, UserStatus, Users
 from django.contrib import messages
 
@@ -35,23 +35,18 @@ def user_status(request,id):
     # user_status = get_object_or_404(Tasks,user__id=id)
     # return render(request,"tasks.html",{"status":user_status})
     user = get_object_or_404(Users,id=id)
-    tasks = Tasks.objects.filter(user__id=id)
-    done_task = Tasks.objects.filter(status__name = "Bajarildi")
+    tasks = Tasks.objects.filter(user__id=id,status__name = "Jarayonda")
+    done_task = Tasks.objects.filter(user__id=id).exclude(status__name = "Jarayonda")
     # print(done_task,"00000000000000000000000")
     context = {
         "tasks":tasks,
         "user":user,
-        "donetask":done_task
+        "donetasks":done_task
     }
     print(user,"0000000000000000000000000000000000000000000000")
     return render(request, "tasks.html", context)
 
 
-
-from django.shortcuts import get_object_or_404, redirect
-from django.utils.timezone import now
-from django.contrib import messages
-from users.models import Tasks, UserStatus
 
 def update_task_status(request, task_id):
     if request.method != "POST":
@@ -78,3 +73,33 @@ def update_task_status(request, task_id):
 
    
     return redirect("user_status", id=task.user.id)
+
+
+def add_task_for_user(request):
+    if request.method == "GET":
+        form = AddTaskforUser()
+        return render(request,'add_task.html',{"form":form})
+    elif request.method == "POST":
+        form = AddTaskforUser(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("home")
+        else:
+            print(form.errors)
+
+def edit_user(request,id):
+    user = get_object_or_404(Users,id=id)
+    if request.method == "GET":
+        form = EditUserForm(instance=user)
+        context = {
+            "form":form,
+            "user":user
+        }
+        return render(request,'edit_user.html',context)
+    elif request.method == "POST":
+        form = EditUserForm(request.POST,instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+        else:
+            print(form.errors)

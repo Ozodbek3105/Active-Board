@@ -6,7 +6,11 @@
   <div class="container">
     
     <h1>{{user.first_name}} {{user.last_name}}</h1>
-    <p>Bu sahifada <strong>Bek Soliyev</strong> tomonidan berilgan vazifalar ro'yxati va ularning statusi ko'rsatiladi.</p>
+    <p>Bu sahifada <strong>{{user.first_name}} {{user.last_name}}</strong> ga berilgan vazifalar ro'yxati va ularning statusi ko'rsatiladi.</p>
+    <div class="d-grid gap-2 d-md-block mt-4" >
+        <a class="btn btn-primary" href="/" type="button">back</a>
+    </div>
+    {% if tasks %}
     
     <table class='table'>
       <thead>
@@ -25,18 +29,29 @@
           <td>{{forloop.counter}}</td>
           <td>{{task.name}}</td>
           <td>
-              <div class="btn-group">
+              <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  {{ task.status.name }}
+                </button>
+                <ul class="dropdown-menu">
                   <form method="POST" action="{% url 'update_status' task.id %}">
-                      {% csrf_token %}
-                      <select name="status" {% if task.status.name != "Jarayonda" %}disabled{% endif %} onchange="this.form.submit()">
-                          <option value="Jarayonda" {% if task.status.name == "Jarayonda" %}selected{% endif %}>Jarayonda</option>
-                          <option value="Bajarildi" {% if task.status.name == "Bajarildi" %}selected{% endif %}>Bajarildi</option>
-                          <option value="Bajarilmadi" {% if task.status.name == "Bajarilmadi" %}selected{% endif %}>Bajarilmadi</option>
-                          <option value="Bekor qilindi" {% if task.status.name == "Bekor qilindi" %}selected{% endif %}>Bekor qilindi</option>
-                      </select>
-                  </form>   
-
+                    {% csrf_token %}
+                    <input type="hidden" name="status" id="statusInput">
+                    <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('Jarayonda')">Jarayonda</a></li>
+                    <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('Bajarildi')">Bajarildi</a></li>
+                    <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('Bajarilmadi')">Bajarilmadi</a></li>
+                    <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('Bekor qilindi')">Bekor qilindi</a></li>
+                  </form>
+                </ul>
               </div>
+
+              <script>
+                function changeStatus(status) {
+                  document.getElementById('statusInput').value = status;
+                  document.querySelector('form').submit();
+                }
+              </script>
+
           </td>
           <td class="status">{{task.start_time}}</td>
           <td class="status">{{task.end_time}}</td>
@@ -46,9 +61,44 @@
       </tbody>
     </table>
     
-    <div class="d-grid gap-2 d-md-block mt-4" >
-        <a class="btn btn-primary" href="/" type="button">back</a>
-        <a class="btn btn-primary" type="button">+ add task</a>
-    </div>
+    {% else  %}
+    
+    <h4>Jarayondagi vazifalar yo'q</h4>
+    <hr>
+    {% endif %}
+    {% comment %} Bajarilgan vazifalar {% endcomment %}
+    
+    {% if donetasks %}
+    <h2>Muddati tugagan vazifalar </h2>
+    <hr>
+    <table class='table'>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Tasks</th>
+          <th>Status</th>
+          <th>Start time</th>
+          <th>End time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Namuna ma'lumotlar -->
+         {% for task in donetasks %}
+        <tr>
+          <td>{{forloop.counter}}</td>
+          <td>{{task.name}}</td>
+          <td>{{task.status.name}}</td>
+          <td class="status">{{task.start_time}}</td>
+          <td class="status">{{task.end_time}}</td>
+        </tr>
+        {% endfor %}
+        <!-- Bazadagi user_id=2 bo'lgan vazifalarni dinamik kiritish mumkin -->
+      </tbody>
+    </table>
+    {% else  %}
+    
+
+    {% endif %}
+    
   </div>
 {% endblock %}
