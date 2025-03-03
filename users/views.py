@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponse
 from users.forms import AddUserForm
 from users.models import Tasks, UserStatus, Users
+from django.contrib import messages
 
 # Create your views here.
 def home(request):
@@ -33,50 +34,47 @@ def delete_user(request,id):
 def user_status(request,id):
     # user_status = get_object_or_404(Tasks,user__id=id)
     # return render(request,"tasks.html",{"status":user_status})
-
+    user = get_object_or_404(Users,id=id)
     tasks = Tasks.objects.filter(user__id=id)
-    if not tasks:
-        return HttpResponse(f"UserStatus with ID {id} not found", status=404)
-    
-    return render(request, "tasks.html", {"tasks": tasks})
+    done_task = Tasks.objects.filter(status__name = "Bajarildi")
+    # print(done_task,"00000000000000000000000")
+    context = {
+        "tasks":tasks,
+        "user":user,
+        "donetask":done_task
+    }
+    print(user,"0000000000000000000000000000000000000000000000")
+    return render(request, "tasks.html", context)
 
 
 
-# def update_task_status(request, task_id):
-    # if request.method == "POST":
-    #     new_status = request.POST.get("status")
-    #     task = get_object_or_404(Tasks, id=task_id)
-    #     current_time = now()
-
-    #     # Faqat start_time va end_time oralig'ida o'zgartirish mumkin
-    #     if not (task.start_time <= current_time <= task.end_time):
-    #         return redirect("user_status", id=task_id)  # Xatolik bo‘lsa ham sahifaga qaytaramiz
-
-    #     # Statusni yangilash
-    #     task.status = new_status
-    #     task.save()
-
-    #     return redirect("user_status", id=task_id)  # Yangilangan sahifani yuklaymiz
-
-    # return redirect("home")  # Agar noto‘g‘ri so‘rov bo‘lsa, bosh sahifaga yo‘naltiramiz
+from django.shortcuts import get_object_or_404, redirect
+from django.utils.timezone import now
+from django.contrib import messages
+from users.models import Tasks, UserStatus
 
 def update_task_status(request, task_id):
-    if request.method == "POST":
-        new_status_name = request.POST.get("status")
-        task = get_object_or_404(Tasks, id=task_id)
-        current_time = now()
+    if request.method != "POST":
+        return redirect("home") 
 
-        #Faqat start_time va end_time oralig‘ida o‘zgartiramiz
-        if not (task.start_time <= current_time <= task.end_time) :
-            return redirect("user_status", id=task_id)
+    task = get_object_or_404(Tasks, id=task_id)
+    new_status_name = request.POST.get("status")
+    new_status = get_object_or_404(UserStatus, name=new_status_name)
 
-        # UserStatus obyekti bazadan olindi
-        new_status = get_object_or_404(UserStatus, name=new_status_name)
+    #agar status allaqachon ozgartirilgan bolsa
+    if task.status.name != "Jarayonda":
+        return redirect("user_status", id=task.user.id)
 
-        # Statusni yangilash
-        task.status = new_status
-        task.save()
+    #agar vaqt oraligida emas bolsa
+    if not (task.start_time and task.end_time and task.start_time <= now() <= task.end_time):
+        return redirect("user_status", id=task.user.id)
 
-        return redirect("user_status", id=task_id)  # Sahifani qayta yuklash
+    if new_status.name == "Bajarildi":
+        task.user.score += 10
+        task.user.save()
 
-    return redirect("home")  # Noto‘g‘ri so‘rov bo‘lsa, bosh sahifaga yo‘naltiramiz
+    task.status = new_status
+    task.save()
+
+   
+    return redirect("user_status", id=task.user.id)

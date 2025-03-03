@@ -4,8 +4,8 @@
 
 
   <div class="container">
-    <!-- Masalan, user_id=2 bo'lgan foydalanuvchi -->
-    <h1>Foydalanuvchi: Bek Soliyev</h1>
+    
+    <h1>{{user.first_name}} {{user.last_name}}</h1>
     <p>Bu sahifada <strong>Bek Soliyev</strong> tomonidan berilgan vazifalar ro'yxati va ularning statusi ko'rsatiladi.</p>
     
     <table class='table'>
@@ -28,13 +28,13 @@
               <div class="btn-group">
                   <form method="POST" action="{% url 'update_status' task.id %}">
                       {% csrf_token %}
-                      <select name="status" onchange="this.form.submit()">
+                      <select name="status" {% if task.status.name != "Jarayonda" %}disabled{% endif %} onchange="this.form.submit()">
                           <option value="Jarayonda" {% if task.status.name == "Jarayonda" %}selected{% endif %}>Jarayonda</option>
                           <option value="Bajarildi" {% if task.status.name == "Bajarildi" %}selected{% endif %}>Bajarildi</option>
                           <option value="Bajarilmadi" {% if task.status.name == "Bajarilmadi" %}selected{% endif %}>Bajarilmadi</option>
                           <option value="Bekor qilindi" {% if task.status.name == "Bekor qilindi" %}selected{% endif %}>Bekor qilindi</option>
                       </select>
-                  </form>
+                  </form>   
 
               </div>
           </td>
@@ -45,9 +45,9 @@
         <!-- Bazadagi user_id=2 bo'lgan vazifalarni dinamik kiritish mumkin -->
       </tbody>
     </table>
-
+    
     <div class="d-grid gap-2 d-md-block mt-4" >
-        <a class="btn btn-primary" href="index.html" type="button">back</a>
+        <a class="btn btn-primary" href="/" type="button">back</a>
         <a class="btn btn-primary" type="button">+ add task</a>
     </div>
   </div>
