@@ -1,9 +1,10 @@
 from django.utils.timezone import now
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponse
-from users.forms import AddTaskforUser, AddUserForm, EditUserForm
+from users.forms import AddTaskforUser, AddUserForm, EditUserForm, RegistrationForm
 from users.models import Tasks, UserStatus, Users
-from django.contrib import messages
+from django.contrib.auth.forms import  AuthenticationForm
+from django.contrib import auth
 
 # Create your views here.
 def home(request):
@@ -38,12 +39,17 @@ def user_status(request,id):
     tasks = Tasks.objects.filter(user__id=id,status__name = "Jarayonda")
     done_task = Tasks.objects.filter(user__id=id).exclude(status__name = "Jarayonda")
     # print(done_task,"00000000000000000000000")
+    print(tasks.all())
+    for task in tasks:
+        if not (task.start_time and task.end_time and task.start_time <= now() <= task.end_time):
+            task.status.name = "Bajarilmadi"
+        task.save()
     context = {
         "tasks":tasks,
         "user":user,
         "donetasks":done_task
     }
-    print(user,"0000000000000000000000000000000000000000000000")
+    # print(user,"0000000000000000000000000000000000000000000000")
     return render(request, "tasks.html", context)
 
 
@@ -103,3 +109,52 @@ def edit_user(request,id):
             return redirect('home')
         else:
             print(form.errors)
+
+
+def login(request):
+    if request.method == "GET":
+        form = AuthenticationForm()
+        context = {
+            "form":form
+        }
+        return render(request,"login.html",context)
+    elif request.method == "POST":
+        form = AuthenticationForm(request,request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = auth.authenticate(username=username,password=password)
+            if user is not None:
+                auth.login(request,user)
+                return redirect('home')
+        else:
+            context = {
+                'form':form,
+            }
+
+            return render(request, 'login.html', context)
+        
+def register(request):
+    if request.method == "POST":
+        print(request.POST)
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+        else:
+            context = {
+                'form':form,
+            }
+            print(form.errors)
+            return render(request, 'register.html', context)
+        # return redirect('register')
+    else:
+
+        form = RegistrationForm()
+    context = {
+        'form':form
+    }
+    return render(request,'register.html',context)
+def logout(request):
+    auth.logout(request)
+    return redirect('home')
