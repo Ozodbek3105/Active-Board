@@ -1,8 +1,8 @@
 <!-- @format -->
 
 {% extends 'base.html' %} {% load static %} {% block content %}
+{% if user.is_authenticated %}
 
-<div class="container">
   <div class="navbar">
     <h1>Users and Score</h1>
 
@@ -27,8 +27,8 @@
         {% for user in users %}
         <tr>
           <th scope="row">{{forloop.counter}}</th>
-          <td>{{user.first_name}}</td>
-          <td>{{user.last_name}}</td>
+          <td>{{user.user.first_name}}</td>
+          <td>{{user.user.last_name}}</td>
           <td class="text-center">{{user.score}}<i class="fa-solid fa-star " style="color: #fff700;"></i></td>
           <td>{{user.position}}</td>
           <td class="text-center">
@@ -53,6 +53,9 @@
         {% endfor %}
       </tbody>
     </table>
-  </div>
+  
+{% else %}
 
+<h5>You don't have permission.You should register or login</h5>
+{% endif %}
 {% endblock %}

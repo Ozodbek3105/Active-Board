@@ -3,10 +3,9 @@
 {% block content %}
 
 
-  <div class="container">
-    
-    <h1>{{user.first_name}} {{user.last_name}}</h1>
-    <p>Bu sahifada <strong>{{user.first_name}} {{user.last_name}}</strong> ga berilgan vazifalar ro'yxati va ularning statusi ko'rsatiladi.</p>
+  
+    <h1>{{user.user.first_name}} {{user.user.last_name}}</h1>
+    <p>Bu sahifada <strong>{{user.user.first_name}} {{user.user.last_name}}</strong> ga berilgan vazifalar ro'yxati va ularning statusi ko'rsatiladi.</p>
     <div class="d-grid gap-2 d-md-block mt-4" >
         <a class="btn btn-primary" href="/" type="button">back</a>
     </div>
@@ -100,5 +99,5 @@
 
     {% endif %}
     
-  </div>
+
 {% endblock %}

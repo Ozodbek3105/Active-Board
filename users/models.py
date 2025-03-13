@@ -1,3 +1,4 @@
+from tkinter import CASCADE
 from django.contrib.auth.models import User
 
 from django.db import models
@@ -13,16 +14,17 @@ class Position(models.Model):
 
     def __str__(self):
         return f"{self.name}"
-    
-# Create your models here.
-class Users(models.Model):
 
-    user = models.OneToOneField(User,on_delete=models.CASCADE)
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     score = models.IntegerField(default=0)
-    position = models.ForeignKey(Position, on_delete=models.CASCADE)
-    # def __str__(self):
-    #     return f"{self.first_name} {self.last_name}"
-    
+    position = models.ForeignKey(Position,on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user.username} - Score: {self.score}"
+
+# Create your models here.
 class UserStatus(models.Model):
     name = models.CharField(max_length=50)
 
@@ -42,7 +44,7 @@ class Tasks(models.Model):
     # Tasks modeli harbir userlar uchun vazifalar beriladi
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=255)
-    user = models.ForeignKey(Users,on_delete=models.CASCADE)
+    user = models.ForeignKey(UserProfile,on_delete=models.CASCADE)
     start_time = models.DateTimeField(default=now, blank=True)
     end_time = models.DateTimeField(blank=True, null=True)
     # updated_at = models.DateTimeField(auto_now=True)  # Oxirgi yangilanish vaqti

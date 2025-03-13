@@ -1,14 +1,15 @@
+from django.contrib.auth.models import User
 from django.utils.timezone import now
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponse
 from users.forms import AddTaskforUser, AddUserForm, EditUserForm, RegistrationForm
-from users.models import Tasks, UserStatus, Users
+from users.models import Tasks, UserProfile, UserStatus
 from django.contrib.auth.forms import  AuthenticationForm
 from django.contrib import auth
-
+from django.db.models import Q
 # Create your views here.
 def home(request):
-    users = Users.objects.order_by("-score")
+    users = UserProfile.objects.order_by("-score")
     context = {
         "users":users
     }
@@ -28,28 +29,37 @@ def add_user(request):
             print(form.errors)
 
 def delete_user(request,id):
-    del_user = get_object_or_404(Users,id=id)
+    del_user = get_object_or_404(UserProfile,id=id)
     del_user.delete()
     return redirect('home')
 
-def user_status(request,id):
-    # user_status = get_object_or_404(Tasks,user__id=id)
-    # return render(request,"tasks.html",{"status":user_status})
-    user = get_object_or_404(Users,id=id)
-    tasks = Tasks.objects.filter(user__id=id,status__name = "Jarayonda")
-    done_task = Tasks.objects.filter(user__id=id).exclude(status__name = "Jarayonda")
-    # print(done_task,"00000000000000000000000")
-    print(tasks.all())
-    for task in tasks:
-        if not (task.start_time and task.end_time and task.start_time <= now() <= task.end_time):
-            task.status.name = "Bajarilmadi"
-        task.save()
+
+def user_status(request, id):
+    user = get_object_or_404(UserProfile, id=id)
+    
+    # "Jarayonda" bo'lgan vazifalarni olish
+    tasks = Tasks.objects.filter(user__id=id, status__name="Jarayonda")
+    
+    # "Jarayonda" bo'lmagan vazifalar
+    done_task = Tasks.objects.filter(user__id=id).exclude(status__name="Jarayonda")
+    
+    # "Bajarilmadi" statusini olish
+    bajarilmadi_status = UserStatus.objects.get(name="Bajarilmadi")
+
+    # "Jarayonda" bo'lgan, ammo vaqt oralig'ida bo'lmaganlarni yangilash
+    Tasks.objects.filter(
+        user__id=id,
+        status__name="Jarayonda"
+    ).filter(~Q(start_time__lte=now(), end_time__gte=now())).update(status=bajarilmadi_status)
+
+    print("Foydalanuvchi:", user.user.first_name)  # Debug ma'lumot
+    
     context = {
-        "tasks":tasks,
-        "user":user,
-        "donetasks":done_task
+        "tasks": tasks,
+        "user": user,
+        "donetasks": done_task
     }
-    # print(user,"0000000000000000000000000000000000000000000000")
+    
     return render(request, "tasks.html", context)
 
 
@@ -94,7 +104,7 @@ def add_task_for_user(request):
             print(form.errors)
 
 def edit_user(request,id):
-    user = get_object_or_404(Users,id=id)
+    user = get_object_or_404(UserProfile,id=id)
     if request.method == "GET":
         form = EditUserForm(instance=user)
         context = {

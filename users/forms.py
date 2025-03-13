@@ -1,11 +1,43 @@
 from django import forms
-from .models import Tasks, Users  # Modelni import qilish kerak
+from django.contrib.auth.models import User, Permission
+from django.contrib.auth.forms import UserCreationForm
+from django import forms
+from .models import Tasks, UserProfile  # Modelni import qilish kerak
 
-class AddUserForm(forms.ModelForm):
+class AddUserForm(UserCreationForm):
+    score = forms.IntegerField(initial=0, required=False)
+
     class Meta:
-        model = Users
-        fields = ['first_name', 'last_name', 'position']
+        model = User
+        fields = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'groups', 'user_permissions')
 
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("This email address is already in use.")
+        return email
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        if commit:
+            user.save()
+            UserProfile.objects.create(user=user, score=self.cleaned_data.get('score', 0))
+        return user
+
+class EditUserForm(forms.ModelForm):
+    score = forms.IntegerField(required=False)
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'is_superuser', 'groups', 'user_permissions')
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        if commit:
+            user.save()
+            user.userprofile.score = self.cleaned_data.get('score', user.userprofile.score)
+            user.userprofile.save()
+        return user
 
 class AddTaskforUser(forms.ModelForm):
     class Meta:
@@ -13,15 +45,6 @@ class AddTaskforUser(forms.ModelForm):
         fields = ["name",'description','user','start_time','end_time',"teg"]
 
 
-class EditUserForm(forms.ModelForm):
-    class Meta:
-        model = Users
-        fields = ['first_name', 'last_name', 'position']
-
-from django import forms
-from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import get_object_or_404
 
 
 class RegistrationForm(UserCreationForm):
