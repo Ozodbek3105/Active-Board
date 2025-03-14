@@ -19,7 +19,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from users.views import add_task_for_user, add_user, delete_user, edit_user, home, login, logout, register, update_task_status, user_status
+from users.views import add_position, add_task_for_user, add_teg, add_user, delete_user, edit_user, home, login, logout, register, update_task_status, user_status
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -33,4 +33,6 @@ urlpatterns = [
     path('register/',register,name="register"),
     path('login/',login,name='login'),
     path('logout/',logout,name='logout'),
+    path('add_teg/',add_teg,name="add_teg"),    
+    path('add_position/',add_position,name="add_position"),   
 ]

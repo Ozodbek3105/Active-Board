@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User, Permission
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
-from .models import Tasks, UserProfile  # Modelni import qilish kerak
+from .models import Position, Tasks, Teg, UserProfile  # Modelni import qilish kerak
 
 class AddUserForm(UserCreationForm):
     score = forms.IntegerField(initial=0, required=False)
@@ -60,3 +60,14 @@ class RegistrationForm(UserCreationForm):
         if password1 != password2:
             raise forms.ValidationError("Parollar mos emas.")
         return password2
+    
+
+class AddTegform(forms.ModelForm):
+    class Meta:
+        model = Teg
+        field = "__all__"
+
+class AddPositionform(forms.ModelForm):
+    class Meta:
+        model = Position
+        field = "__all__"

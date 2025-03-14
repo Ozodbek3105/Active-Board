@@ -1,8 +1,9 @@
+from urllib import request
 from django.contrib.auth.models import User
 from django.utils.timezone import now
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponse
-from users.forms import AddTaskforUser, AddUserForm, EditUserForm, RegistrationForm
+from users.forms import AddPositionform, AddTaskforUser, AddTegform, AddUserForm, EditUserForm, RegistrationForm
 from users.models import Tasks, UserProfile, UserStatus
 from django.contrib.auth.forms import  AuthenticationForm
 from django.contrib import auth
@@ -168,3 +169,27 @@ def register(request):
 def logout(request):
     auth.logout(request)
     return redirect('home')
+
+
+def add_teg(reqeust):
+    if request.methog == "GET":
+        form = AddTegform()
+        return render(request,'add_teg.html',{"form":form})
+    elif request.method == "POST":
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+        else:
+            print("Form errrrrorrrrrr",form.error)
+
+
+def add_position(reqeust):
+    if request.methog == "GET":
+        form = AddPositionform()
+        return render(request,'add_position.html',{"form":form})
+    elif request.method == "POST":
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+        else:
+            print("Form errrrrorrrrrr",form.error)

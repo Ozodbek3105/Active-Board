@@ -1,0 +1,17 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<div class="row my-3">
+  <div class="col-12">
+    {% load crispy_forms_tags %}
+    <h4 class="text-center">Add Teg</h4>
+    <form
+      class="col-12"
+      action="{% url 'add_teg' %}"
+      method="post"
+      style="width: 600px; margin: auto; height: auto; padding: 30px 0"
+    >
+      {% csrf_token %} {{form|crispy}}
+      <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
