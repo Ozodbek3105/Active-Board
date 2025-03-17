@@ -9,6 +9,8 @@
     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
       <a class="btn btn-primary me-md-2" href="{% url 'add_task' %}" type="button">Add Task for User</a>
       <a class="btn btn-success" href="{% url 'add_user' %}" type="button">Add User</a>
+      <a class="btn btn-warning" href="{% url 'add_teg' %}" type="button">Add Teg</a>
+      <a class="btn btn-primary" href="{% url 'add_position' %}" type="button">Add Position</a>
     </div> 
   </div>
     <table class="table table-bordered">
@@ -34,6 +36,7 @@
           <td class="text-center">
             <a
               type="button"
+              
               href="{% url "user_status" user.id %}"
               class="btn btn-primary"
             >
@@ -41,13 +44,18 @@
             >
           </td> 
           <td  class="text-center">
+              {% if request.user.id == user.user.id %}
               <a href="{% url 'edit_user' user.id %}">
                 <i class="fa-solid fa-pen-to-square"></i>
               </a>
+              {% endif %}
               &nbsp;
-              <a href="{% url "delete_user" user.id %}">
-                <i class="fas fa-trash-alt text-danger"></i>
-              </a>
+              
+              {% if request.user.is_superuser %}
+                <a href="{% url 'delete_user' user.id %}">
+                  <i class="fas fa-trash-alt text-danger"></i>
+                </a>
+              {% endif %}
             </td>
         </tr>
         {% endfor %}

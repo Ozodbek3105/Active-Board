@@ -8,6 +8,7 @@ from users.models import Tasks, UserProfile, UserStatus
 from django.contrib.auth.forms import  AuthenticationForm
 from django.contrib import auth
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 def home(request):
     users = UserProfile.objects.order_by("-score")
@@ -15,7 +16,7 @@ def home(request):
         "users":users
     }
     return render(request,"index.html",context)
-
+@login_required
 def add_user(request):
     if request.method == "GET":
         form = AddUserForm()
@@ -27,14 +28,15 @@ def add_user(request):
             form.save()
             return redirect("home")
         else:
-            print(form.errors)
-
+            print(form.errors)  # Debug uchun xatoliklarni chop qilish
+            return render(request, "add_user.html", {"form": form})  # Xatolik bilan formni qaytarish
+@login_required
 def delete_user(request,id):
     del_user = get_object_or_404(UserProfile,id=id)
     del_user.delete()
     return redirect('home')
 
-
+@login_required
 def user_status(request, id):
     user = get_object_or_404(UserProfile, id=id)
     
@@ -64,7 +66,7 @@ def user_status(request, id):
     return render(request, "tasks.html", context)
 
 
-
+@login_required
 def update_task_status(request, task_id):
     if request.method != "POST":
         return redirect("home") 
@@ -91,7 +93,7 @@ def update_task_status(request, task_id):
    
     return redirect("user_status", id=task.user.id)
 
-
+@login_required
 def add_task_for_user(request):
     if request.method == "GET":
         form = AddTaskforUser()
@@ -103,7 +105,7 @@ def add_task_for_user(request):
             return redirect("home")
         else:
             print(form.errors)
-
+@login_required
 def edit_user(request,id):
     user = get_object_or_404(UserProfile,id=id)
     if request.method == "GET":
@@ -144,7 +146,7 @@ def login(request):
             }
 
             return render(request, 'login.html', context)
-        
+     
 def register(request):
     if request.method == "POST":
         print(request.POST)
@@ -166,30 +168,42 @@ def register(request):
         'form':form
     }
     return render(request,'register.html',context)
+@login_required
 def logout(request):
     auth.logout(request)
     return redirect('home')
 
 
-def add_teg(reqeust):
-    if request.methog == "GET":
+
+@login_required
+def add_teg(request):
+    if request.method == "GET":
         form = AddTegform()
-        return render(request,'add_teg.html',{"form":form})
+        return render(request, 'add_teg.html', {"form": form})
+    
     elif request.method == "POST":
+        form = AddTegform(request.POST)  
         if form.is_valid():
             form.save()
             return redirect('home')
         else:
-            print("Form errrrrorrrrrr",form.error)
+            print("Form errorrrrrr", form.errors)  
+
+    return render(request, 'add_teg.html', {"form": form})  
 
 
-def add_position(reqeust):
-    if request.methog == "GET":
+@login_required
+def add_position(request):
+    if request.method == "GET":
         form = AddPositionform()
-        return render(request,'add_position.html',{"form":form})
+        return render(request, 'add_position.html', {"form": form})
+    
     elif request.method == "POST":
+        form = AddPositionform(request.POST)  
         if form.is_valid():
             form.save()
             return redirect('home')
         else:
-            print("Form errrrrorrrrrr",form.error)
+            print("Form errorrrrrr", form.errors)  
+
+    return render(request, 'add_position.html', {"form": form})  

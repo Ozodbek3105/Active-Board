@@ -6,11 +6,19 @@ from .models import Position, Tasks, Teg, UserProfile  # Modelni import qilish k
 
 class AddUserForm(UserCreationForm):
     score = forms.IntegerField(initial=0, required=False)
-
+    position = forms.ModelChoiceField(
+        queryset=Position.objects.all(),  # Mavjud bo'lgan barcha positionlarni olish
+        required=True
+    )
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'groups', 'user_permissions')
+        fields = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', )
 
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'score' in self.fields:
+            del self.fields['score']
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if User.objects.filter(email=email).exists():
@@ -21,7 +29,7 @@ class AddUserForm(UserCreationForm):
         user = super().save(commit=False)
         if commit:
             user.save()
-            UserProfile.objects.create(user=user, score=self.cleaned_data.get('score', 0))
+            UserProfile.objects.create(user=user, score= 0,position=self.cleaned_data.get('position') )
         return user
 
 class EditUserForm(forms.ModelForm):
@@ -65,9 +73,9 @@ class RegistrationForm(UserCreationForm):
 class AddTegform(forms.ModelForm):
     class Meta:
         model = Teg
-        field = "__all__"
+        fields = ["name"]
 
 class AddPositionform(forms.ModelForm):
     class Meta:
         model = Position
-        field = "__all__"
+        fields = ["name"]

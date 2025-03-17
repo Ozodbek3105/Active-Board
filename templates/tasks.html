@@ -11,7 +11,7 @@
     </div>
     {% if tasks %}
     
-    <table class='table'>
+    {% comment %} <table class='table'>
       <thead>
         <tr>
           <th>ID</th>
@@ -27,39 +27,112 @@
         <tr>
           <td>{{forloop.counter}}</td>
           <td>{{task.name}}</td>
+          
           <td>
-              <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  {{ task.status.name }}
-                </button>
-                <ul class="dropdown-menu">
-                  <form method="POST" action="{% url 'update_status' task.id %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="status" id="statusInput">
-                    <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('Jarayonda')">Jarayonda</a></li>
-                    <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('Bajarildi')">Bajarildi</a></li>
-                    <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('Bajarilmadi')">Bajarilmadi</a></li>
-                    <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('Bekor qilindi')">Bekor qilindi</a></li>
-                  </form>
-                </ul>
-              </div>
-
-              <script>
-                function changeStatus(status) {
-                  document.getElementById('statusInput').value = status;
-                  document.querySelector('form').submit();
-                }
-              </script>
-
+            {% if request.user.id == task.user.user.id %}
+            <div class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                {{ task.status.name }}
+              </button>
+              <ul class="dropdown-menu">
+                <form method="POST" action="{% url 'update_status' task.id %}" id="form-{{ task.id }}">
+                  {% csrf_token %}
+                  <input type="hidden" name="status" id="statusInput-{{ task.id }}">
+                  <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('{{ task.id }}', 'Jarayonda')">Jarayonda</a></li>
+                  <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('{{ task.id }}', 'Bajarildi')">Bajarildi</a></li>
+                  <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('{{ task.id }}', 'Bajarilmadi')">Bajarilmadi</a></li>
+                  <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('{{ task.id }}', 'Bekor qilindi')">Bekor qilindi</a></li>
+                </form>
+              </ul>
+            </div>
+            {% else %}
+            <span>{{ task.status.name }}</span>
+            {% endif %}
           </td>
-          <td class="status">{{task.start_time}}</td>
+          <script>
+            function changeStatus(taskId, status) {
+              document.getElementById('statusInput-' + taskId).value = status;
+              document.getElementById('form-' + taskId).submit();
+            }
+          </script>
+
+                    <td class="status">{{task.start_time}}</td>
           <td class="status">{{task.end_time}}</td>
         </tr>
         {% endfor %}
         <!-- Bazadagi user_id=2 bo'lgan vazifalarni dinamik kiritish mumkin -->
       </tbody>
+    </table> {% endcomment %}
+    <table class='table'>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Tasks</th>
+          <th>Description</th>
+          <th>Status</th>
+          <th>Start time</th>
+          <th>End time</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in tasks %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ task.name }}</td>
+          <td>
+            <!-- Modalni ochish uchun tugma -->
+            <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#descModal-{{ task.id }}">
+              View
+            </button>
+
+            <!-- Modal oynasi -->
+            <div class="modal fade" id="descModal-{{ task.id }}" tabindex="-1" aria-labelledby="descModalLabel-{{ task.id }}" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="descModalLabel-{{ task.id }}">Task Description</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    {{ task.description }}
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+          
+          <td>
+            {% if request.user == task.user.user.id %}
+              <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  {{ task.status.name }}
+                </button>
+                <ul class="dropdown-menu">
+                  <form method="POST" action="{% url 'update_status' task.id %}" id="form-{{ task.id }}">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" id="statusInput-{{ task.id }}">
+                    <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('{{ task.id }}', 'Jarayonda')">Jarayonda</a></li>
+                    <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('{{ task.id }}', 'Bajarildi')">Bajarildi</a></li>
+                    <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('{{ task.id }}', 'Bajarilmadi')">Bajarilmadi</a></li>
+                    <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('{{ task.id }}', 'Bekor qilindi')">Bekor qilindi</a></li>
+                  </form>
+                </ul>
+              </div>
+            {% else %}
+              <span>{{ task.status.name }}</span>
+            {% endif %}
+          </td>
+
+          <td>{{ task.start_time }}</td>
+          <td>{{ task.end_time }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
     </table>
-    
+
     {% else  %}
     
     <h4>Jarayondagi vazifalar yo'q</h4>
@@ -75,6 +148,7 @@
         <tr>
           <th>ID</th>
           <th>Tasks</th>
+          <th>Description</th>
           <th>Status</th>
           <th>Start time</th>
           <th>End time</th>
@@ -86,6 +160,30 @@
         <tr>
           <td>{{forloop.counter}}</td>
           <td>{{task.name}}</td>
+          <td>
+            <!-- Modalni ochish uchun tugma -->
+            <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#descModal-{{ task.id }}">
+              View
+            </button>
+
+            <!-- Modal oynasi -->
+            <div class="modal fade" id="descModal-{{ task.id }}" tabindex="-1" aria-labelledby="descModalLabel-{{ task.id }}" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="descModalLabel-{{ task.id }}">Task Description</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    {{ task.description }}
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
           <td>{{task.status.name}}</td>
           <td class="status">{{task.start_time}}</td>
           <td class="status">{{task.end_time}}</td>
@@ -94,9 +192,6 @@
         <!-- Bazadagi user_id=2 bo'lgan vazifalarni dinamik kiritish mumkin -->
       </tbody>
     </table>
-    {% else  %}
-    
-
     {% endif %}
     
 
