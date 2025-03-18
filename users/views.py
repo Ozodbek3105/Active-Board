@@ -150,7 +150,7 @@ def login(request):
 def register(request):
     if request.method == "POST":
         print(request.POST)
-        form = RegistrationForm(request.POST)
+        form = AddUserForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('login')
@@ -163,9 +163,9 @@ def register(request):
         # return redirect('register')
     else:
 
-        form = RegistrationForm()
+        form = AddUserForm()
     context = {
-        'form':form
+        'form':form 
     }
     return render(request,'register.html',context)
 @login_required
