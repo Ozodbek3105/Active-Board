@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+from dotenv import load_dotenv
 import os
 from pathlib import Path
 import dj_database_url  # PostgreSQL uchun
@@ -22,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = 'django-insecure-=tti5j3=v$90@21!r%qd5nw-_%iqi%$3fyc9z($h14=^&$b!sl'
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = "*3yeg=q90@+8=_bi)g5mo8ra7ncyk7xuss^ba)eozxx*i6f@kz"
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost 127.0.0.1').split(" ")
 
@@ -87,8 +88,35 @@ DATABASES = {
     }
 }
 
-database_url = os.environ.get("DATABASE_URL")
-DATABASES['default'] = dj_database_url.parse(database_url)
+
+
+
+# .env faylni yuklash
+load_dotenv()
+
+# DATABASE_URL ni olish
+database_url = os.getenv("DATABASE_URL")
+
+# Django DATABASES sozlamalari
+# .env faylni yuklash
+load_dotenv()
+
+# DATABASE_URL ni olish
+database_url = os.getenv("DATABASE_URL")
+
+if database_url:
+    DATABASES = {
+        'default': dj_database_url.parse(database_url)
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
+print("DATABASE_URL:", database_url)  # Tekshirish uchun
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
