@@ -7,62 +7,11 @@
     <h1>{{user.user.first_name}} {{user.user.last_name}}</h1>
     <p>Bu sahifada <strong>{{user.user.first_name}} {{user.user.last_name}}</strong> ga berilgan vazifalar ro'yxati va ularning statusi ko'rsatiladi.</p>
     <div class="d-grid gap-2 d-md-block mt-4" >
-        <a class="btn btn-primary" href="/home" type="button">back</a>
+        <a class="btn btn-primary" href="/" type="button">back</a>
     </div>
     {% if tasks %}
     
-    {% comment %} <table class='table'>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Tasks</th>
-          <th>Status</th>
-          <th>Start time</th>
-          <th>End time</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Namuna ma'lumotlar -->
-         {% for task in tasks %}
-        <tr>
-          <td>{{forloop.counter}}</td>
-          <td>{{task.name}}</td>
-          
-          <td>
-            {% if request.user.id == task.user.user.id %}
-            <div class="dropdown">
-              <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                {{ task.status.name }}
-              </button>
-              <ul class="dropdown-menu">
-                <form method="POST" action="{% url 'update_status' task.id %}" id="form-{{ task.id }}">
-                  {% csrf_token %}
-                  <input type="hidden" name="status" id="statusInput-{{ task.id }}">
-                  <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('{{ task.id }}', 'Jarayonda')">Jarayonda</a></li>
-                  <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('{{ task.id }}', 'Bajarildi')">Bajarildi</a></li>
-                  <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('{{ task.id }}', 'Bajarilmadi')">Bajarilmadi</a></li>
-                  <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('{{ task.id }}', 'Bekor qilindi')">Bekor qilindi</a></li>
-                </form>
-              </ul>
-            </div>
-            {% else %}
-            <span>{{ task.status.name }}</span>
-            {% endif %}
-          </td>
-          <script>
-            function changeStatus(taskId, status) {
-              document.getElementById('statusInput-' + taskId).value = status;
-              document.getElementById('form-' + taskId).submit();
-            }
-          </script>
-
-                    <td class="status">{{task.start_time}}</td>
-          <td class="status">{{task.end_time}}</td>
-        </tr>
-        {% endfor %}
-        <!-- Bazadagi user_id=2 bo'lgan vazifalarni dinamik kiritish mumkin -->
-      </tbody>
-    </table> {% endcomment %}
+  
     <table class='table'>
       <thead>
         <tr>
