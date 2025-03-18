@@ -23,7 +23,7 @@ from users.views import add_position, add_task_for_user, add_teg, add_user, dele
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("home", home,name="home"),
+    path("", home,name="home"),
     path('add_user/',add_user,name="add_user"),
     path('delete_user/<int:id>/',delete_user,name="delete_user"),
     path('edit_user/<int:id>/',edit_user,name="edit_user"),
@@ -31,7 +31,7 @@ urlpatterns = [
     path('user/update_status/<int:task_id>/',update_task_status,name="update_status"),
     path("user/add_task/",add_task_for_user,name="add_task"),
     path('register/',register,name="register"),
-    path('',login,name='login'),
+    path('login/',login,name='login'),
     path('logout/',logout,name='logout'),
     path('add_teg/',add_teg,name="add_teg"),    
     path('add_position/',add_position,name="add_position"),   
