@@ -44,11 +44,11 @@
             >
           </td> 
           <td  class="">
-              {% if request.user.id == user.user.id %}
-              <a href="{% url 'edit_user' user.id %}">
+              
+              <a {% if request.user.id == user.user.id %} href="{% url 'edit_user' user.id %} {% endif %}">
                 <i class="fa-solid fa-pen-to-square"></i>
               </a>
-              {% endif %}
+              
               &nbsp;
               
               {% if request.user.is_superuser %}
