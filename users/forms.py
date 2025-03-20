@@ -12,7 +12,7 @@ class AddUserForm(UserCreationForm):
     )
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', )
+        fields = ('username', 'email', 'first_name', 'last_name')
 
 
     def __init__(self, *args, **kwargs):
@@ -27,26 +27,38 @@ class AddUserForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
+        # Default True
+        user.is_staff = True  
+        user.is_active = True  
         if commit:
             user.save()
             UserProfile.objects.create(user=user, score= 0,position=self.cleaned_data.get('position') )
         return user
 
 class EditUserForm(forms.ModelForm):
-    score = forms.IntegerField(required=False)
-
+    score = forms.IntegerField(initial=0,required=False)
+    position = forms.ModelChoiceField(
+        queryset=Position.objects.all(),  # Mavjud bo'lgan barcha positionlarni olish
+        required=True
+    )
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'is_superuser', 'groups', 'user_permissions')
-
+        fields = ('username', 'email', 'first_name', 'last_name' )
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'score' in self.fields:
+            del self.fields['score']
     def save(self, commit=True):
         user = super().save(commit=False)
+        # Default True
+        user.is_staff = True  
+        user.is_active = True  
         if commit:
             user.save()
-            user.userprofile.score = self.cleaned_data.get('score', user.userprofile.score)
-            user.userprofile.save()
+            UserProfile.objects.create(user=user, score= 0,position=self.cleaned_data.get('position') )
         return user
-
+    
 class AddTaskforUser(forms.ModelForm):
     class Meta:
         model = Tasks

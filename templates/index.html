@@ -7,12 +7,12 @@
     <h1>Users and Score</h1>
 
     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-      <a class="btn btn-primary me-md-2" href="{% url 'add_task' %}" type="button">Add Task for User</a>
-      <a class="btn btn-success" href="{% url 'add_user' %}" type="button">Add User</a>
+      <a class="btn btn-success" href="{% url 'add_task' %}" type="button">Add Task for User</a>
       <a class="btn btn-warning" href="{% url 'add_teg' %}" type="button">Add Teg</a>
       <a class="btn btn-primary" href="{% url 'add_position' %}" type="button">Add Position</a>
     </div> 
   </div>
+  <div class="col-12" style="overflow-x: auto;">
     <table class="table table-bordered">
       <thead>
         <tr>
@@ -31,9 +31,9 @@
           <th scope="row">{{forloop.counter}}</th>
           <td>{{user.user.first_name}}</td>
           <td>{{user.user.last_name}}</td>
-          <td class="text-center">{{user.score}}<i class="fa-solid fa-star " style="color: #fff700;"></i></td>
+          <td class="">{{user.score}}<i class="fa-solid fa-star " style="color: #fff700;"></i></td>
           <td>{{user.position}}</td>
-          <td class="text-center">
+          <td >
             <a
               type="button"
               
@@ -43,7 +43,7 @@
               view</a
             >
           </td> 
-          <td  class="text-center">
+          <td  class="">
               {% if request.user.id == user.user.id %}
               <a href="{% url 'edit_user' user.id %}">
                 <i class="fa-solid fa-pen-to-square"></i>
@@ -61,7 +61,7 @@
         {% endfor %}
       </tbody>
     </table>
-  
+  </div>
 {% else %}
 
 <h5>You don't have permission.You should register or login</h5>
