@@ -60,20 +60,21 @@
                   {{ task.status.name }}
                 </button>
                 <ul class="dropdown-menu">
-                  <form method="POST" action="{% url 'update_status' task.id %}" id="form-{{ task.id }}">
-                    {% csrf_token %}
-                    <input type="hidden" name="status" id="statusInput-{{ task.id }}">
-                    <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('{{ task.id }}', 'Jarayonda')">Jarayonda</a></li>
-                    <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('{{ task.id }}', 'Bajarildi')">Bajarildi</a></li>
-                    <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('{{ task.id }}', 'Bajarilmadi')">Bajarilmadi</a></li>
-                    <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('{{ task.id }}', 'Bekor qilindi')">Bekor qilindi</a></li>
-                  </form>
+                  <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('{{ task.id }}', 'Jarayonda')">Jarayonda</a></li>
+                  <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('{{ task.id }}', 'Bajarildi')">Bajarildi</a></li>
+                  <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('{{ task.id }}', 'Bajarilmadi')">Bajarilmadi</a></li>
+                  <li><a class="dropdown-item {% if task.status.name != 'Jarayonda' %}disabled{% endif %}" href="#" onclick="changeStatus('{{ task.id }}', 'Bekor qilindi')">Bekor qilindi</a></li>
                 </ul>
               </div>
+              <form method="POST" action="{% url 'update_status' task.id %}" id="form-{{ task.id }}">
+                {% csrf_token %}
+                <input type="hidden" name="status" id="statusInput-{{ task.id }}">
+              </form>
             {% else %}
               <span>{{ task.status.name }}</span>
             {% endif %}
           </td>
+
 
           <td>{{ task.start_time }}</td>
           <td>{{ task.end_time }}</td>
@@ -143,5 +144,11 @@
     </table>
     {% endif %}
     
+    <script>
+      function changeStatus(taskId, status) {
+          document.getElementById("statusInput-" + taskId).value = status;
+          document.getElementById("form-" + taskId).submit();
+      }
+    </script>
 
 {% endblock %}
